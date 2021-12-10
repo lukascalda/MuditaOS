@@ -117,7 +117,7 @@ namespace app
     void ApplicationDesktop::handleNotificationsChanged(std::unique_ptr<gui::SwitchData> notificationsParams)
     {
         if (auto window = getCurrentWindow()->getName();
-            window == app::window::name::desktop_main_window || window == gui::popup::window::phone_lock_window) {
+            window == app::window::name::desktop_main_window || isWindowPhoneLock(window)) {
 
             auto refreshMode = getRefreshModeFromNotifications(notificationsParams.get());
             updateCurrentWindow(std::move(notificationsParams), gui::ShowMode::GUI_SHOW_INIT, refreshMode);

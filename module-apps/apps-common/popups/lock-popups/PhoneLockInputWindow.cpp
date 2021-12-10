@@ -111,7 +111,7 @@ namespace gui
         }
         else if (inputEvent.is(KeyCode::KEY_ENTER) && navBar->isActive(nav_bar::Side::Center)) {
             if (lock->isState(locks::Lock::LockState::Blocked)) {
-                application->switchWindow(popup::window::phone_lock_window);
+                application->switchWindow(popup::window::phone_lock_window_clock);
             }
             else {
                 lock->consumeState();

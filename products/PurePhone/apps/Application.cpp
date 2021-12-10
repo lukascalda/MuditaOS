@@ -9,7 +9,9 @@
 #include <popups/TetheringConfirmationPopup.hpp>
 #include <popups/PowerOffWindow.hpp>
 #include <popups/presenter/PowerOffPresenter.hpp>
-#include <popups/lock-popups/PhoneLockedWindow.hpp>
+#include <popups/lock-popups/PhoneLockedWindowClock.hpp>
+#include <popups/lock-popups/PhoneLockedWindowQuote.hpp>
+#include <popups/lock-popups/PhoneLockedWindowLogo.hpp>
 #include <popups/lock-popups/PhoneLockedInfoWindow.hpp>
 #include <popups/lock-popups/PhoneLockInputWindow.hpp>
 #include <popups/lock-popups/PhoneLockChangeInfoWindow.hpp>
@@ -65,9 +67,18 @@ namespace app
             case ID::PhoneLockInput:
             case ID::PhoneLockInfo:
             case ID::PhoneLockChangeInfo:
-                windowsFactory.attach(window::phone_lock_window, [](ApplicationCommon *app, const std::string &name) {
-                    return std::make_unique<gui::PhoneLockedWindow>(app, window::phone_lock_window);
-                });
+                windowsFactory.attach(
+                    window::phone_lock_window_clock, [](ApplicationCommon *app, const std::string &name) {
+                        return std::make_unique<gui::PhoneLockedWindowClock>(app, window::phone_lock_window_clock);
+                    });
+                windowsFactory.attach(
+                    window::phone_lock_window_quote, [](ApplicationCommon *app, const std::string &name) {
+                        return std::make_unique<gui::PhoneLockedWindowQuote>(app, window::phone_lock_window_quote);
+                    });
+                windowsFactory.attach(
+                    window::phone_lock_window_logo, [](ApplicationCommon *app, const std::string &name) {
+                        return std::make_unique<gui::PhoneLockedWindowLogo>(app, window::phone_lock_window_logo);
+                    });
                 windowsFactory.attach(
                     window::phone_lock_info_window, [](ApplicationCommon *app, const std::string &name) {
                         return std::make_unique<gui::PhoneLockedInfoWindow>(app, window::phone_lock_info_window);

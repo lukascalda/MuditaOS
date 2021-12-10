@@ -58,8 +58,12 @@ namespace app
                 return true;
             });
         popupBlueprint.registerBlueprint(
-            ID::PhoneLock, [&](gui::popup::ID id, std::unique_ptr<gui::PopupRequestParams> & /*params*/) {
-                switchWindowPopup(gui::popup::resolveWindowName(id),
+            ID::PhoneLock, [&](gui::popup::ID id, std::unique_ptr<gui::PopupRequestParams> &params) {
+                auto lockParams = dynamic_cast<gui::PhoneLockRequestParams *>(params.get());
+                if (lockParams == nullptr) {
+                    return false;
+                }
+                switchWindowPopup(lockParams->getWallpaperWindow(),
                                   gui::popup::popupDisposition(id, gui::popup::Disposition::Priority::Normal),
                                   nullptr,
                                   SwitchReason::PhoneLock);

@@ -78,6 +78,9 @@ namespace app::manager
         phoneLockHandler.setNoLockTimeAttemptsLeft(utils::getNumericValue<unsigned int>(
             settings->getValue(settings::SystemProperties::noLockTimeAttemptsLeft, settings::SettingsScope::Global)));
 
+        wallpaperModel.setWallpaper(static_cast<gui::WallpaperOption>(utils::getNumericValue<unsigned int>(
+            settings->getValue(settings::Wallpaper::option, settings::SettingsScope::Global))));
+
         settings->registerValueChange(
             settings::SystemProperties::lockScreenPasscodeIsOn,
             [this](const std::string &value) { phoneLockHandler.enablePhoneLock(utils::getNumericValue<bool>(value)); },
@@ -100,6 +103,14 @@ namespace app::manager
         settings->registerValueChange(
             settings::SystemProperties::autoLockTimeInSec,
             [this](std::string value) { lockTimeChanged(std::move(value)); },
+            settings::SettingsScope::Global);
+
+        settings->registerValueChange(
+            settings::Wallpaper::option,
+            [this](std::string value) {
+                wallpaperModel.setWallpaper(
+                    static_cast<gui::WallpaperOption>(utils::getNumericValue<unsigned int>(value)));
+            },
             settings::SettingsScope::Global);
 
         return sys::ReturnCodes::Success;
@@ -503,8 +514,17 @@ namespace app::manager
 
     auto ApplicationManager::resolveHomeWindow() -> std::string
     {
-        return phoneLockHandler.isPhoneLocked() ? gui::popup::window::phone_lock_window
-                                                : gui::name::window::main_window;
+        if (phoneLockHandler.isPhoneLocked()) {
+            switch (wallpaperModel.getWallpaper()) {
+            case gui::WallpaperOption::Clock:
+                return gui::popup::window::phone_lock_window_clock;
+            case gui::WallpaperOption::Quote:
+                return gui::popup::window::phone_lock_window_quote;
+            case gui::WallpaperOption::Logo:
+                return gui::popup::window::phone_lock_window_logo;
+            }
+        }
+        return gui::name::window::main_window;
     }
 
     auto ApplicationManager::resolveHomeApplication() -> std::string
@@ -552,6 +572,30 @@ namespace app::manager
         default:
             return ApplicationManagerCommon::handleAction(action);
         }
+    }
+
+    auto ApplicationManager::handleActionOnFocusedApp(ActionEntry &action) -> ActionProcessStatus
+    {
+        if (action.actionId == actions::Action::ShowPopup) {
+            auto data = dynamic_cast<gui::PopupRequestParams *>(action.params.get());
+            if (data == nullptr) {
+                return ActionProcessStatus::Skipped;
+            }
+            if (data->getPopupId() == gui::popup::ID::PhoneLock) {
+                auto targetApp = getFocusedApplication();
+                if (targetApp == nullptr) {
+                    return ActionProcessStatus::Skipped;
+                }
+                action.setTargetApplication(targetApp->name());
+
+                // Injecting wallpaper option
+                auto params = std::make_unique<gui::PhoneLockRequestParams>(gui::popup::ID::PhoneLock,
+                                                                            wallpaperModel.getWallpaper());
+                app::ApplicationCommon::requestAction(this, targetApp->name(), action.actionId, std::move(params));
+                return ActionProcessStatus::Accepted;
+            }
+        }
+        return ApplicationManagerCommon::handleActionOnFocusedApp(action);
     }
 
     void ApplicationManager::handleStart(StartAllowedMessage *msg)

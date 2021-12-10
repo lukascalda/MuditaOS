@@ -11,8 +11,33 @@
 #include <locks/widgets/Lock.hpp>
 #include <locks/data/LockData.hpp>
 
+#include <application-settings/data/WallpaperOption.hpp>
+
 namespace gui
 {
+    class PhoneLockRequestParams : public PopupRequestParams
+    {
+      public:
+        PhoneLockRequestParams(gui::popup::ID popupId, WallpaperOption wallpaperOption)
+            : PopupRequestParams{popupId}, wallpaperOption{wallpaperOption}
+        {}
+
+        [[nodiscard]] auto getWallpaperWindow() -> std::string
+        {
+            switch (wallpaperOption) {
+            case WallpaperOption::Clock:
+                return popup::window::phone_lock_window_clock;
+            case WallpaperOption::Quote:
+                return popup::window::phone_lock_window_quote;
+            case WallpaperOption::Logo:
+                return popup::window::phone_lock_window_logo;
+            }
+            return "";
+        }
+
+      private:
+        WallpaperOption wallpaperOption;
+    };
     class PhoneUnlockInputRequestParams : public PopupRequestParams
     {
       public:
