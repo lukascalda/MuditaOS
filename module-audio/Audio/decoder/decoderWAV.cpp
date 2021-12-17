@@ -27,7 +27,7 @@ namespace audio
             LOG_ERROR("Unable to init wav decoder");
             return;
         }
-        sampleRate = dwav->sampleRate;
+        setOrigSampleRate(dwav->sampleRate);
         // NOTE: Always convert to S16LE as internal format
         bitsPerSample = 16;
         // Number of channels
@@ -43,7 +43,7 @@ namespace audio
         }
     }
 
-    uint32_t decoderWAV::decode(uint32_t samplesToRead, int16_t *pcmData)
+    uint32_t decoderWAV::decode_impl(uint32_t samplesToRead, int16_t *pcmData)
     {
         if (!isInitialized) {
             LOG_ERROR("Wav decoder not initialized");
@@ -53,7 +53,7 @@ namespace audio
         const auto samples_read = drwav_read_pcm_frames_s16(dwav, samplesToRead / chanNumber, pcmData);
         if (samples_read) {
             /* Calculate frame duration in seconds */
-            position += float(samplesToRead) / float(sampleRate);
+            position += float(samplesToRead) / float(getOrigSampleRate());
         }
         return samples_read * chanNumber;
     }
@@ -68,6 +68,6 @@ namespace audio
         drwav_seek_to_pcm_frame(dwav, dwav->totalPCMFrameCount * pos);
 
         // Calculate new position
-        position = float(dwav->totalPCMFrameCount) * pos / float(sampleRate);
+        position = float(dwav->totalPCMFrameCount) * pos / float(getOrigSampleRate());
     }
 } // namespace audio

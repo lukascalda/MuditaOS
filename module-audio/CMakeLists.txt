@@ -21,6 +21,7 @@ target_sources(
                 ${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioFormat.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioMux.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/Audio/decoder/Decoder.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/Audio/decoder/DecoderResampler.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/Audio/decoder/decoderFLAC.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/Audio/decoder/decoderMP3.cpp
                 ${CMAKE_CURRENT_SOURCE_DIR}/Audio/decoder/decoderWAV.cpp
@@ -74,6 +75,7 @@ target_link_libraries(${PROJECT_NAME}
                 utils-math
                 tagsfetcher
                 dr_libs::dr_libs
+                fresample::fresample
 )
 
 add_subdirectory(tags_fetcher)

@@ -85,7 +85,7 @@ namespace audio
 
                     // Fill necessary parameters
                     samplesPerFrame           = smpl;
-                    sampleRate                = info.hz;
+                    setOrigSampleRate(info.hz);
                     chanNumber                = info.channels;
                     firstValidFrameByteSize   = (144 * info.bitrate_kbps * 1000 / info.hz);
                     firstValidFrameFileOffset = std::ftell(fd) - bytesAvailable - firstValidFrameByteSize;
@@ -168,7 +168,7 @@ namespace audio
         }
     }
 
-    uint32_t decoderMP3::decode(uint32_t samplesToRead, int16_t *pcmData)
+    uint32_t decoderMP3::decode_impl(uint32_t samplesToRead, int16_t *pcmData)
     {
         mp3dec_frame_info_t info = {0, 0, 0, 0, 0, 0};
 
@@ -252,7 +252,7 @@ namespace audio
         memmove(&pcmsamplesbuffer[0], &pcmsamplesbuffer[samplesToReadChann], pcmsamplesbuffer_idx * sizeof(int16_t));
 
         /* Calculate frame duration in seconds */
-        position += (float)((float)(chanNumber == 2 ? samplesToRead / chanNumber : samplesToRead) / (float)sampleRate);
+        position += (float)((float)(chanNumber == 2 ? samplesToRead / chanNumber : samplesToRead) / (float)getOrigSampleRate());
 
         return samplesToRead;
     }

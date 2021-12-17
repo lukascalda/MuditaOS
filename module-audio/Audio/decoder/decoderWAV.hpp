@@ -18,10 +18,10 @@ namespace audio
         explicit decoderWAV(const char *fileName);
         virtual ~decoderWAV();
 
-        uint32_t decode(uint32_t samplesToRead, int16_t *pcmData) override;
 
         void setPosition(float pos) override;
-
+      protected:
+        uint32_t decode_impl(uint32_t samplesToRead, int16_t *pcmData) override;
       private:
         std::vector<int32_t> pcmsamplesbuffer;
         std::unique_ptr<internal::wavContext> decoderContext;

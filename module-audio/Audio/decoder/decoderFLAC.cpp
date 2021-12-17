@@ -28,7 +28,7 @@ namespace audio
         }
 
         chanNumber = flac->channels;
-        sampleRate = flac->sampleRate;
+        setOrigSampleRate(flac->sampleRate);
         // NOTE: Always convert to S16LE as internal format
         bitsPerSample = 16;
         isInitialized = true;
@@ -39,7 +39,7 @@ namespace audio
         drflac_close(flac);
     }
 
-    uint32_t decoderFLAC::decode(uint32_t samplesToRead, int16_t *pcmData)
+    uint32_t decoderFLAC::decode_impl(uint32_t samplesToRead, int16_t *pcmData)
     {
 
         uint32_t samples_read = 0;
@@ -47,7 +47,7 @@ namespace audio
         samples_read = drflac_read_pcm_frames_s16(flac, samplesToRead / chanNumber, (drflac_int16 *)pcmData);
         if (samples_read) {
             /* Calculate frame duration in seconds */
-            position += float(samples_read) / float(sampleRate);
+            position += float(samples_read) / float(getOrigSampleRate());
         }
 
         return samples_read * chanNumber;
@@ -62,7 +62,7 @@ namespace audio
         drflac_seek_to_pcm_frame(flac, flac->totalPCMFrameCount * pos);
 
         // Calculate new position
-        position = float(flac->totalPCMFrameCount) * pos / float(sampleRate);
+        position = float(flac->totalPCMFrameCount) * pos / float(getOrigSampleRate());
     }
 
     /* Data encoded in UTF-8 */

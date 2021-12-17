@@ -7,6 +7,7 @@
 #include "Audio/Endpoint.hpp"
 #include "Audio/Stream.hpp"
 #include "DecoderWorker.hpp"
+#include "DecoderResampler.hpp"
 
 #include <log/log.hpp>
 
@@ -35,7 +36,7 @@ namespace audio
 
         virtual ~Decoder();
 
-        virtual uint32_t decode(uint32_t samplesToRead, int16_t *pcmData) = 0;
+        std::tuple<int16_t*,std::size_t> decode(uint32_t samplesToRead, int16_t *pcmData);
 
         // Range 0 - 1
         virtual void setPosition(float pos) = 0;
@@ -71,6 +72,14 @@ namespace audio
         static std::unique_ptr<Decoder> Create(const char *file);
 
       protected:
+        virtual uint32_t decode_impl(uint32_t samplesToRead, int16_t *pcmData) = 0;
+        auto setOrigSampleRate(uint32_t sampleRate) {
+            origSampleRate = sampleRate;
+            sampleRate = 48000;
+        }
+        auto getOrigSampleRate() const {
+            return origSampleRate;
+        }
         virtual auto getBitWidth() -> unsigned int
         {
             return bitsPerSample;
@@ -82,7 +91,6 @@ namespace audio
         static constexpr auto workerBufferSize        = 1024 * 8;
         static constexpr Endpoint::Traits decoderCaps = {.usesDMA = false};
 
-        uint32_t sampleRate = 0;
         uint32_t chanNumber = 0;
         uint32_t bitsPerSample;
         float position = 0;
@@ -99,6 +107,10 @@ namespace audio
         // decoding worker
         std::unique_ptr<DecoderWorker> audioWorker;
         DecoderWorker::EndOfFileCallback _endOfFileCallback;
+    private:
+        uint32_t sampleRate = 0;
+        uint32_t origSampleRate = 0;
+        DecoderResampler resampler;
     };
 
 } // namespace audio

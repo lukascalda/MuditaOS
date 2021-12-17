@@ -16,6 +16,7 @@
 #include <Audio/AudioCommon.hpp>
 #include <service-audio/AudioMessage.hpp>
 #include <service-evtmgr/Constants.hpp>
+#include "avdtp.h"
 #include "service-bluetooth/messages/Connect.hpp"
 #include "service-bluetooth/messages/Disconnect.hpp"
 #include "service-bluetooth/Constants.hpp"
@@ -131,7 +132,7 @@ namespace bluetooth
     btstack_packet_callback_registration_t A2DP::A2DPImpl::hciEventCallbackRegistration;
     std::array<uint8_t, 150> A2DP::A2DPImpl::sdpSourceServiceBuffer;
     std::array<uint8_t, 4> A2DP::A2DPImpl::mediaSbcCodecCapabilities = {
-        (AVDTP_SBC_44100 << 4) | AVDTP_SBC_STEREO,
+        (AVDTP_SBC_48000 << 4) | AVDTP_SBC_STEREO,
         0xFF, //(AVDTP_SBC_BLOCK_LENGTH_16 << 4) | (AVDTP_SBC_SUBBANDS_8 << 2) | AVDTP_SBC_ALLOCATION_METHOD_LOUDNESS,
         2,
         53};

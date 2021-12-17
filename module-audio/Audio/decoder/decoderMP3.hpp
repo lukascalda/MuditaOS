@@ -21,10 +21,9 @@ namespace audio
       public:
         decoderMP3(const char *fileName);
 
-        uint32_t decode(uint32_t samplesToRead, int16_t *pcmData) override;
-
         void setPosition(float pos) override;
-
+      protected:
+        uint32_t decode_impl(uint32_t samplesToRead, int16_t *pcmData) override;
       private:
         bool find_first_valid_frame();
 
