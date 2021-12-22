@@ -24,6 +24,7 @@ class EventManager : public EventManagerCommon
 
   private:
     void handleKeyEvent(sys::Message *msg) override;
+    sys::ReturnCodes InitHandler() override;
     sys::MessagePointer DataReceivedHandler(sys::DataMessage *msgl, sys::ResponseMessage *resp) override;
     void initProductEvents() final;
     auto createEventWorker() -> std::unique_ptr<WorkerEventCommon> final;
