@@ -40,6 +40,7 @@ namespace app::bell_settings
       public:
         FrontlightPresenter(std::shared_ptr<FrontlightListItemProvider> &&provider,
                             std::unique_ptr<AbstractFrontlightModel> &&frontlightModel);
+        ~FrontlightPresenter();
 
         auto getPagesProvider() const -> std::shared_ptr<gui::ListItemProvider> override;
         void eraseProviderData() override;

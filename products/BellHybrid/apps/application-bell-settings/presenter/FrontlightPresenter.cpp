@@ -16,6 +16,11 @@ namespace app::bell_settings
         };
     }
 
+    FrontlightPresenter::~FrontlightPresenter()
+    {
+        exitWithoutSave();
+    }
+
     auto FrontlightPresenter::getPagesProvider() const -> std::shared_ptr<gui::ListItemProvider>
     {
         return provider;
